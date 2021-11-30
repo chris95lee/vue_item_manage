@@ -6,7 +6,7 @@
         <img src="../assets/logo.png" alt="avatar">
       </div>
       <!-- 登录表单区 -->
-      <el-form :model="loginForm" :rules="loginFormRules" class="login_form">
+      <el-form :model="loginForm" :rules="loginFormRules" ref="loginFormRef" class="login_form">
         <!-- 用户名 -->
         <el-form-item prop="username">
           <el-input v-model="loginForm.username" placeholder="请输入用户名" prefix-icon="el-icon-user"></el-input>
@@ -17,8 +17,8 @@
         </el-form-item>
         <!-- 按钮 -->
         <el-form-item class="btns">
-          <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
-          <el-button type="info" @click="resetForm('loginForm')">重置</el-button>
+          <el-button type="primary" @click="submitForm('loginFormRef')">登录</el-button>
+          <el-button type="info" @click="resetForm('loginFormRef')">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -51,11 +51,15 @@ export default {
   },
   methods: {
     submitForm (formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(async valid => {
         if (valid) {
-          alert('submit!')
+          const { data: res } = await this.$http.post('login', this.loginForm)
+          if (res.meta.status !== 200) {
+            return console.log('登录失败')
+          } else {
+            console.log('登录成功')
+          }
         } else {
-          console.log('error submit!!')
           return false
         }
       })
