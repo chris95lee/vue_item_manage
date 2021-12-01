@@ -55,9 +55,14 @@ export default {
         if (valid) {
           const { data: res } = await this.$http.post('login', this.loginForm)
           if (res.meta.status !== 200) {
-            return console.log('登录失败')
+            this.$message.error('登录失败')
           } else {
-            console.log('登录成功')
+            this.$message({
+              message: '登录成功',
+              type: 'success'
+            })
+            window.sessionStorage.setItem('token', res.data.token)
+            this.$router.push('/home')
           }
         } else {
           return false
