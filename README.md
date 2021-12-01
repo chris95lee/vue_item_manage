@@ -24,4 +24,7 @@
 ### (5) 服务器------验证token
 ### (6) 客户端<------根据token返回不同数据<------服务器
 ## 1.3 创建login分支：git checkout -b login
-
+## 1.4 当token被移除时,需要通过路由导航守卫,阻止访问home页面,返回login页面
+# 2. 开发事项
+## 2.1 element-ui
+element-ui使用按需导入，使用时需要在与src同级的plugin文件夹中创建element.js，并将调用的组件名注册
