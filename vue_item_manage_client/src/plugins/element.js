@@ -5,5 +5,4 @@ Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Input)
 Vue.use(Button)
-Vue.use(Button)
 Vue.prototype.$message = Message
