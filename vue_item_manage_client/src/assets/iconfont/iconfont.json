@@ -1,0 +1,44 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "158873",
+      "name": "people_fill",
+      "font_class": "peoplefill",
+      "unicode": "e735",
+      "unicode_decimal": 59189
+    },
+    {
+      "icon_id": "176309",
+      "name": "command_fill",
+      "font_class": "commandfill",
+      "unicode": "e73e",
+      "unicode_decimal": 59198
+    },
+    {
+      "icon_id": "1096510",
+      "name": "goods_new_fill",
+      "font_class": "goodsnewfill",
+      "unicode": "e7bf",
+      "unicode_decimal": 59327
+    },
+    {
+      "icon_id": "1493653",
+      "name": "cart_fill_light",
+      "font_class": "cart_fill_light",
+      "unicode": "e7d8",
+      "unicode_decimal": 59352
+    },
+    {
+      "icon_id": "1512548",
+      "name": "form_fill_light",
+      "font_class": "form_fill_light",
+      "unicode": "e7ea",
+      "unicode_decimal": 59370
+    }
+  ]
+}
