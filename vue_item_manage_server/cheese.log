@@ -74,3 +74,11 @@
 [2021-12-05T00:54:19.117] [DEBUG] cheese - admin
 [2021-12-05T00:54:19.151] [DEBUG] cheese - null
 [2021-12-05T00:54:19.151] [DEBUG] cheese - null
+[2021-12-08T22:00:31.834] [DEBUG] cheese - login => username:admin,password:123456
+[2021-12-08T22:00:31.836] [DEBUG] cheese - admin
+[2021-12-08T22:00:31.904] [DEBUG] cheese - null
+[2021-12-08T22:00:31.905] [DEBUG] cheese - null
+[2021-12-08T22:21:15.429] [DEBUG] cheese - login => username:admin,password:123456
+[2021-12-08T22:21:15.429] [DEBUG] cheese - admin
+[2021-12-08T22:21:15.435] [DEBUG] cheese - null
+[2021-12-08T22:21:15.436] [DEBUG] cheese - null
