@@ -13,7 +13,7 @@
       <!-- 侧边栏 -->
       <el-aside :width="isCollapse ? '64px' : '200px' ">
         <div class="toggle-button" @click="toggleCollapse">|||</div>
-        <el-menu background-color="#333744" text-color="#fff" active-text-color="#409EFF" unique-opened :collapse="isCollapse" :collapse-transition = "false">
+        <el-menu background-color="#333744" text-color="#fff" active-text-color="#409EFF" unique-opened :collapse="isCollapse" :collapse-transition="false" router :default-active="activePath">
           <!-- 一级菜单 -->
           <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id">
             <!-- 一级菜单模板区 -->
@@ -24,7 +24,7 @@
               <span>{{item.authName}}</span>
             </template>
             <!-- 二级菜单 -->
-            <el-menu-item :index="subItem.id + ''" v-for="subItem in item.children" :key="subItem.id">
+            <el-menu-item :index="'/'+subItem.path" v-for="subItem in item.children" :key="subItem.id" @click="saveNavState('/'+subItem.path)">
               <!-- 二级菜单模板区 -->
               <template slot="title">
               <!-- 图标 -->
@@ -58,11 +58,14 @@ export default {
         145: 'iconfont icon-form_fill_light'
       },
       // 是否折叠
-      isCollapse: false
+      isCollapse: false,
+      // 保存激活链接
+      activePath: ''
     }
   },
   created () {
     this.getMenuList()
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     logout () {
@@ -81,6 +84,11 @@ export default {
     // 点击按钮实现折叠与展开
     toggleCollapse () {
       this.isCollapse = !this.isCollapse
+    },
+    // 存储激活路径
+    saveNavState (activePath) {
+      window.sessionStorage.setItem('activePath', activePath)
+      this.activePath = activePath
     }
   }
 }
