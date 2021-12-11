@@ -76,6 +76,16 @@
 
 export default {
   data () {
+    // 验证规则
+    const checkMobile = (rule, value, callback) => {
+      const regMobile = /^(0|86_17951)?(13[0-9]|15[0123456789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+      if (regMobile.test(value)) {
+        return callback()
+      } else {
+        callback(new Error('请输入合法电话'))
+      }
+    }
+
     return {
       // 获取用户列表的参数
       queryInfo: {
@@ -111,7 +121,8 @@ export default {
           { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
         ],
         mobile: [
-          { required: true, message: '请输入手机号码', trigger: 'blur' }
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
         ]
       }
     }
