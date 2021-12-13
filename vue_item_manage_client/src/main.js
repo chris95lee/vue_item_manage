@@ -17,6 +17,7 @@ axios.interceptors.request.use(config => {
   config.headers.authorization = window.sessionStorage.getItem('token')
   return config
 })
+// 这里是引入了axios，并且在vue的prototype添加$http。vue在2.0之后就放弃了vue-resource，使用axios，但除了第三方axios之外，还有vue-axios。这里是第三方axios
 Vue.prototype.$http = axios
 Vue.config.productionTip = false
 

@@ -33,8 +33,8 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
-          <template>
-            <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+          <template v-slot="slot">
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(slot.row.id)"></el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
             <el-tooltip effect="dark" content="修改权限" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
@@ -45,8 +45,8 @@
       <!-- 分页区域 -->
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="queryInfo.pagenum" :page-sizes="[1, 2, 5, 10]" :page-size="queryInfo.pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
     </el-card>
-    <!-- 添加用户对话框弹出 -->
-    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="50%" :before-close="handleClose">
+    <!-- 添加用户对话框 -->
+    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="50%" :before-close="handleClose" @close="addDialogClosed">
       <!-- 表单主体 -->
       <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
         <el-form-item label="用户名" prop="username">
@@ -68,6 +68,27 @@
         <el-button type="primary" @click="addDialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 修改用户对话框 -->
+    <el-dialog title="修改用户" :visible.sync="editDialogVisible" width="50%" :before-close="handleClose" @close="addDialogClosed">
+      <!-- 表单主体 -->
+      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="addForm.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="addForm.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="mobile">
+          <el-input v-model="addForm.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 表单底部按钮 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 
 </template>
@@ -124,7 +145,10 @@ export default {
           { required: true, message: '请输入手机号码', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
         ]
-      }
+      },
+      // 修改用户数据信息
+      editDialogVisible: false,
+      editForm: {}
     }
   },
   created () {
@@ -132,7 +156,11 @@ export default {
   },
   methods: {
     async getUserList () {
+      console.log(this)
+      const { data } = await this.$http.get('users', { params: this.queryInfo })
+      console.log(data)
       const { data: res } = await this.$http.get('users', { params: this.queryInfo })
+      console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error('获取失败')
       }
@@ -165,6 +193,19 @@ export default {
           done()
         })
         .catch(_ => {})
+    },
+    // 监听对话框关闭
+    addDialogClosed () {
+      this.$refs.addFormRef.resetFields()
+    },
+    // 显示编辑对话框
+    async showEditDialog (id) {
+      const { data: res } = await this.$http.get('user/'+id)
+      if (res.meta.status !== 200) {
+        return this.$message.error('查询用户信息失败')
+      }
+      this.editForm = res.data
+      this.editDialogVisible = true
     }
   }
 }
