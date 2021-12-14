@@ -69,23 +69,23 @@
       </span>
     </el-dialog>
     <!-- 修改用户对话框 -->
-    <el-dialog title="修改用户" :visible.sync="editDialogVisible" width="50%" :before-close="handleClose" @close="addDialogClosed">
+    <el-dialog title="修改用户" :visible.sync="editDialogVisible" width="50%" :before-close="handleClose" @close="editDialogClosed">
       <!-- 表单主体 -->
-      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="addForm.username" autocomplete="off"></el-input>
+      <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="70px">
+        <el-form-item label="用户名">
+          <el-input v-model="editForm.username" autocomplete="off" disabled></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="addForm.email" autocomplete="off"></el-input>
+          <el-input v-model="editForm.email" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="手机" prop="mobile">
-          <el-input v-model="addForm.mobile" autocomplete="off"></el-input>
+          <el-input v-model="editForm.mobile" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <!-- 表单底部按钮 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="editUserInfo">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -148,7 +148,17 @@ export default {
       },
       // 修改用户数据信息
       editDialogVisible: false,
-      editForm: {}
+      editForm: {},
+      editFormRules: {
+        email: [
+          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ]
+      }
     }
   },
   created () {
@@ -156,11 +166,7 @@ export default {
   },
   methods: {
     async getUserList () {
-      console.log(this)
-      const { data } = await this.$http.get('users', { params: this.queryInfo })
-      console.log(data)
       const { data: res } = await this.$http.get('users', { params: this.queryInfo })
-      console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error('获取失败')
       }
@@ -179,7 +185,6 @@ export default {
     // 监听switch开关状态的改变
     async userStateChange (userinfo) {
       const { data: res } = await this.$http.put(`users/${userinfo.id}/state/${userinfo.mg_state}`)
-      console.log(res)
       if (res.meta.status !== 200) {
         userinfo.mg_state = !userinfo.mg_state
         return this.$message.error('用户状态更新失败')
@@ -194,18 +199,40 @@ export default {
         })
         .catch(_ => {})
     },
-    // 监听对话框关闭
+    // 监听添加对话框关闭
     addDialogClosed () {
       this.$refs.addFormRef.resetFields()
     },
     // 显示编辑对话框
     async showEditDialog (id) {
-      const { data: res } = await this.$http.get('user/'+id)
+      const { data: res } = await this.$http.get('users/' + id)
       if (res.meta.status !== 200) {
         return this.$message.error('查询用户信息失败')
       }
       this.editForm = res.data
       this.editDialogVisible = true
+    },
+    // 监听修改对话框关闭
+    editDialogClosed () {
+      this.$refs.editFormRef.resetFields()
+    },
+    // 修改用户信息并提交
+    editUserInfo () {
+      // 预验证
+      this.$refs.editFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put('users/' + this.editForm.id, {
+          email: this.editForm.email,
+          mobile: this.editForm.mobile
+        })
+        if (res.meta.status !== 200) {
+          return this.$message.error('更新用户信息失败')
+        }
+        // 成功：关闭对话框，刷新数据列表，提示修改成功
+        this.editDialogVisible = false
+        this.getUserList()
+        this.$message.success('更新用户信息成功')
+      })
     }
   }
 }
