@@ -35,7 +35,7 @@
         <el-table-column label="操作" width="180px">
           <template v-slot="slot">
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(slot.row.id)"></el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(slot.row.id)"></el-button>
             <el-tooltip effect="dark" content="修改权限" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
             </el-tooltip>
@@ -88,6 +88,7 @@
         <el-button type="primary" @click="editUserInfo">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 删除用户对话框 -->
 
   </div>
 
@@ -233,6 +234,22 @@ export default {
         this.getUserList()
         this.$message.success('更新用户信息成功')
       })
+    },
+    // 根据id删除对应用户信息
+    async removeUserById (id) {
+      // 弹框询问是否删除
+      const confirmResult = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => {
+        return err
+      })
+      // confirmResult确认删除返回字符串confirm，取消返回字符串cancel
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除')
+      }
+      console.log('确认删除')
     }
   }
 }
