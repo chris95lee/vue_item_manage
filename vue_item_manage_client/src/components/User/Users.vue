@@ -88,8 +88,6 @@
         <el-button type="primary" @click="editUserInfo">确 定</el-button>
       </span>
     </el-dialog>
-    <!-- 删除用户对话框 -->
-
   </div>
 
 </template>
