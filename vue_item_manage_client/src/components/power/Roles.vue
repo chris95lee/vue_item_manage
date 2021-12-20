@@ -35,7 +35,7 @@
                   </el-col>
                   <!-- 三级 -->
                   <el-col :span=18>
-                    <el-tag type="warning" v-for="(item3) in item2.children" :key="item3.id" closable @close="removeRightById()">{{item3.authName}}</el-tag>
+                    <el-tag type="warning" v-for="(item3) in item2.children" :key="item3.id" closable @close="removeRightById(slot.row, item3.id)">{{item3.authName}}</el-tag>
                   </el-col>
                 </el-row>
               </el-col>
@@ -204,7 +204,7 @@ export default {
       this.getRoleList()
     },
     // 根据id删除权限
-    removeRightById () {
+    async removeRightById (role, rightId) {
       this.$confirm('此操作将永久删除该权限, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -220,6 +220,13 @@ export default {
           message: '已取消删除'
         })
       })
+      const { data: res } = await this.$http.delete(`roles/${role.id}/rights/${rightId}`)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除权限失败')
+      }
+      // 这样会导致页面重新刷新
+      // this.getRoleList()
+      role.children = res.data
     }
   }
 }
