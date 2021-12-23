@@ -37,7 +37,7 @@
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(slot.row.id)"></el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(slot.row.id)"></el-button>
             <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini" @click="setRole(slot.row.id)"></el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="setRole(slot.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -90,7 +90,17 @@
     </el-dialog>
     <!-- 分配角色对话框 -->
     <el-dialog title="分配角色" :visible.sync="setRoleDialogVisible" width="50%">
-      <span>这是一段信息</span>
+      <!-- <pre>{{userInfo}}</pre> -->
+      <div>
+        <p>当前用户：{{userInfo.username}}</p>
+        <p>当前角色：{{userInfo.role_name}}</p>
+        <p>
+          分配新角色
+          <el-select v-model="selectedRoleId" placeholder="请选择">
+            <el-option v-for="item in roleList" :key="item.id" :label="item.roleName" :value="item.id"></el-option>
+          </el-select>
+        </p>
+      </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRoleDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="setRoleDialogVisible = false">确 定</el-button>
@@ -167,7 +177,13 @@ export default {
         ]
       },
       // 分配角色对话框可见
-      setRoleDialogVisible: false
+      setRoleDialogVisible: false,
+      // 需要被分配角色的用户信息
+      userInfo: {},
+      // 角色列表
+      roleList: [],
+      // 分配新角色id
+      selectedRoleId: ''
     }
   },
   created () {
@@ -265,8 +281,18 @@ export default {
       this.getUserList()
     },
     // 分配角色
-    setRole (id) {
-      console.log(id)
+    setRole (userInfo) {
+      this.userInfo = userInfo
+      this.getRoleList()
+      this.setRoleDialogVisible = true
+    },
+    // 获取所有角色列表
+    async getRoleList () {
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取角色列表失败')
+      }
+      this.roleList = res.data
     }
   }
 }
