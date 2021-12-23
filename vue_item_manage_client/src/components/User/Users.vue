@@ -36,8 +36,8 @@
           <template v-slot="slot">
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(slot.row.id)"></el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(slot.row.id)"></el-button>
-            <el-tooltip effect="dark" content="修改权限" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+            <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="setRole(slot.row.id)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -86,6 +86,14 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="editUserInfo">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 分配角色对话框 -->
+    <el-dialog title="分配角色" :visible.sync="setRoleDialogVisible" width="50%">
+      <span>这是一段信息</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setRoleDialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -157,7 +165,9 @@ export default {
           { required: true, message: '请输入手机号码', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
         ]
-      }
+      },
+      // 分配角色对话框可见
+      setRoleDialogVisible: false
     }
   },
   created () {
@@ -253,6 +263,10 @@ export default {
       }
       this.$message.success('删除成功')
       this.getUserList()
+    },
+    // 分配角色
+    setRole (id) {
+      console.log(id)
     }
   }
 }
