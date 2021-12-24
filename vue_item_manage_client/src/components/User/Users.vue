@@ -89,7 +89,7 @@
       </span>
     </el-dialog>
     <!-- 分配角色对话框 -->
-    <el-dialog title="分配角色" :visible.sync="setRoleDialogVisible" width="50%">
+    <el-dialog title="分配角色" :visible.sync="setRoleDialogVisible" width="50%" @close="setRoleDialogClosed">
       <!-- <pre>{{userInfo}}</pre> -->
       <div>
         <p>当前用户：{{userInfo.username}}</p>
@@ -103,7 +103,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRoleDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="setRoleDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -208,10 +208,10 @@ export default {
       this.getUserList()
     },
     // 监听switch开关状态的改变
-    async userStateChange (userinfo) {
-      const { data: res } = await this.$http.put(`users/${userinfo.id}/state/${userinfo.mg_state}`)
+    async userStateChange (userInfo) {
+      const { data: res } = await this.$http.put(`users/${userInfo.id}/state/${userInfo.mg_state}`)
       if (res.meta.status !== 200) {
-        userinfo.mg_state = !userinfo.mg_state
+        userInfo.mg_state = !userInfo.mg_state
         return this.$message.error('用户状态更新失败')
       }
       this.$message.success('用户状态更新成功')
@@ -293,6 +293,26 @@ export default {
         return this.$message.error('获取角色列表失败')
       }
       this.roleList = res.data
+    },
+    // 点击确定保存分配信息
+    async saveRoleInfo () {
+      if (!this.selectedRoleId === true) {
+        return this.$message.error('请选择分配的角色')
+      }
+      const { data: res } = await this.$http.put(`users/${this.userInfo.id}/role`, {
+        rid: this.selectedRoleId
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error('更新角色失败')
+      }
+      this.$message.success('更新角色成功')
+      this.getUserList()
+      this.setRoleDialogVisible = false
+    },
+    // 监听修改用户角色对话框关闭，重置对话框
+    setRoleDialogClosed () {
+      this.selectedRoleId = ''
+      this.userInfo = ''
     }
   }
 }
