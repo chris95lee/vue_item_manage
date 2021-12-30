@@ -17,6 +17,14 @@
           </el-col>
         </el-row>
         <!-- 切换区域 -->
+        <el-tabs v-model="activeName" @tab-click="handleTabClick">
+          <el-tab-pane label="动态参数" name="first">
+            <el-button type="primary" size="mini" :disabled="isBtnDisable">添加参数</el-button>
+          </el-tab-pane>
+          <el-tab-pane label="静态属性" name="second">
+            <el-button type="primary" size="mini" :disabled="isBtnDisable">添加属性</el-button>
+          </el-tab-pane>
+        </el-tabs>
       </el-card>
   </div>
 </template>
@@ -33,7 +41,9 @@ export default {
         value: 'cat_id',
         label: 'cat_name',
         children: 'children'
-      }
+      },
+      // 激活页签
+      activeName: 'first'
     }
   },
   created () {
@@ -53,6 +63,17 @@ export default {
         return
       }
       this.$message.success('选择成功')
+    },
+    handleTabClick () {
+      console.log(this.activeName)
+    }
+  },
+  computed: {
+    isBtnDisable () {
+      if (this.selectedCate.length !== 3) {
+        return true
+      }
+      return false
     }
   }
 }
