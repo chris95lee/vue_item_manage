@@ -18,11 +18,27 @@
         </el-row>
         <!-- 切换区域 -->
         <el-tabs v-model="activeName" @tab-click="handleTabClick">
-          <el-tab-pane label="动态参数" name="first">
+          <el-tab-pane label="动态参数" name="many">
             <el-button type="primary" size="mini" :disabled="isBtnDisable">添加参数</el-button>
+            <el-table :data="manyTableData" border stripe>
+              <el-table-column type="expand"></el-table-column>
+              <el-table-column type="index"></el-table-column>
+              <el-table-column prop="attr_name" label="参数名称"></el-table-column>
+              <el-table-column label="操作">
+                <template>
+                  <el-button type="primary" icon="el-icon-edit" size="mini">编辑</el-button>
+                  <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
           </el-tab-pane>
-          <el-tab-pane label="静态属性" name="second">
+          <el-tab-pane label="静态属性" name="only">
             <el-button type="primary" size="mini" :disabled="isBtnDisable">添加属性</el-button>
+            <el-table :data="onlyTableData" border stripe>
+              <el-table-column type="expand"></el-table-column>
+              <el-table-column type="index"></el-table-column>
+              <el-table-column prop="attr_name" label="属性名称"></el-table-column>
+            </el-table>
           </el-tab-pane>
         </el-tabs>
       </el-card>
@@ -43,7 +59,9 @@ export default {
         children: 'children'
       },
       // 激活页签
-      activeName: 'first'
+      activeName: 'many',
+      manyTableData: [],
+      onlyTableData: []
     }
   },
   created () {
@@ -58,14 +76,31 @@ export default {
       this.goodCateList = res.data
     },
     handleChange () {
+      this.getParamsData()
+    },
+    handleTabClick () {
+      this.getParamsData()
+    },
+    // 获取参数的列表数据
+    async getParamsData () {
       if (this.selectedCate.length !== 3) {
         this.selectedCate = []
         return
       }
-      this.$message.success('选择成功')
-    },
-    handleTabClick () {
-      console.log(this.activeName)
+      const { data: res } = await this.$http.get(`categories/${this.cateID}/attributes`, {
+        params: {
+          sel: this.activeName
+        }
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取信息失败')
+      }
+      this.$message.success('获取信息成功')
+      if (this.activeName === 'many') {
+        this.manyTableData = res.data
+      } else {
+        this.onlyTableData = res.data
+      }
     }
   },
   computed: {
@@ -74,6 +109,13 @@ export default {
         return true
       }
       return false
+    },
+    // 当前分类的id
+    cateID () {
+      if (this.selectedCate.length === 3) {
+        return this.selectedCate[2]
+      }
+      return null
     }
   }
 }
