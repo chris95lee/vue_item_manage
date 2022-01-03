@@ -270,16 +270,24 @@ export default {
         this.$refs.saveTagInput.$refs.input.focus()
       })
     },
-    handleInputConfirm (row) {
-      const inputValue = row.inputValue
-      if (inputValue.trim().length === 0) {
+    async handleInputConfirm (row) {
+      if (row.inputValue.trim().length === 0) {
         row.inputVisible = false
         row.inputValue = ''
         return
       }
-      // if (inputValue) {
-      //   row.dynamicTags.push(inputValue)
-      // }
+      row.attr_vals.push(row.inputValue.trim())
+      row.inputValue = ''
+      row.inputVisible = false
+      const { data: res } = await this.$http.put(`categories/${this.cateID}/attributes/${row.attr_id}`, {
+        attr_name: row.attr_name,
+        attr_sel: row.attr_sel,
+        attr_vals: row.attr_vals.join(' ')
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error('添加失败')
+      }
+      this.$message.success('添加成功')
     }
   },
   computed: {
