@@ -18,12 +18,13 @@
         </el-row>
         <!-- 切换区域 -->
         <el-tabs v-model="activeName" @tab-click="handleTabClick">
+          <!-- 动态属性 -->
           <el-tab-pane label="动态参数" name="many">
             <el-button type="primary" size="mini" :disabled="isBtnDisable" @click="addDialogVisible=true">添加参数</el-button>
             <el-table :data="manyTableData" border stripe>
               <el-table-column type="expand">
                 <template v-slot="scope">
-                  <el-tag v-for="(item, index) in scope.row.attr_vals" :key="index" closable>{{item}}</el-tag>
+                  <el-tag v-for="(item, index) in scope.row.attr_vals" :key="index" closable @close="handleClose(index, scope.row)">{{item}}</el-tag>
                   <el-input class="input-new-tag" v-if="scope.row.inputVisible" v-model="scope.row.inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm(scope.row)" @blur="handleInputConfirm(scope.row)"></el-input>
                   <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag</el-button>
                 </template>
@@ -38,10 +39,17 @@
               </el-table-column>
             </el-table>
           </el-tab-pane>
+          <!-- 静态属性 -->
           <el-tab-pane label="静态属性" name="only">
             <el-button type="primary" size="mini" :disabled="isBtnDisable" @click="addDialogVisible=true">添加属性</el-button>
             <el-table :data="onlyTableData" border stripe>
-              <el-table-column type="expand"></el-table-column>
+              <el-table-column type="expand">
+                <template v-slot="scope">
+                  <el-tag v-for="(item, index) in scope.row.attr_vals" :key="index" closable @close="handleClose(index, scope.row)">{{item}}</el-tag>
+                  <el-input class="input-new-tag" v-if="scope.row.inputVisible" v-model="scope.row.inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm(scope.row)" @blur="handleInputConfirm(scope.row)"></el-input>
+                  <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag</el-button>
+                </template>
+              </el-table-column>
               <el-table-column type="index"></el-table-column>
               <el-table-column prop="attr_name" label="属性名称"></el-table-column>
               <el-table-column label="操作">
@@ -143,6 +151,8 @@ export default {
     async getParamsData () {
       if (this.selectedCate.length !== 3) {
         this.selectedCate = []
+        this.manyTableData = []
+        this.onlyTableData = []
         return
       }
       const { data: res } = await this.$http.get(`categories/${this.cateID}/attributes`, {
@@ -160,7 +170,6 @@ export default {
         // 文本框输入的值
         item.inputValue = ''
       })
-      console.log(res.data)
       if (this.activeName === 'many') {
         this.manyTableData = res.data
       } else {
@@ -210,7 +219,6 @@ export default {
             attr_sel: this.activeName
           }
         )
-        console.log(res)
         if (res.meta.status !== 200) {
           return this.$message.error('修改参数信息失败')
         }
@@ -222,7 +230,7 @@ export default {
     modifyDialogClosed () {
       this.$refs.modifyFormRef.resetFields()
     },
-    // 删除参数
+    // 删除
     /*
     deleteDialog (id) {
       this.$confirm('此操作将永久删除该参数, 是否继续?', '提示', {
@@ -279,15 +287,24 @@ export default {
       row.attr_vals.push(row.inputValue.trim())
       row.inputValue = ''
       row.inputVisible = false
+      this.saveAttrValues(row)
+    },
+    // 讲对attr_vals的操作保存到数据库
+    async saveAttrValues (row) {
       const { data: res } = await this.$http.put(`categories/${this.cateID}/attributes/${row.attr_id}`, {
         attr_name: row.attr_name,
         attr_sel: row.attr_sel,
         attr_vals: row.attr_vals.join(' ')
       })
       if (res.meta.status !== 200) {
-        return this.$message.error('添加失败')
+        return this.$message.error('修改失败')
       }
-      this.$message.success('添加成功')
+      this.$message.success('修改成功')
+    },
+    // 删除对应的参数可选项
+    handleClose (index, row) {
+      row.attr_vals.splice(index, 1)
+      this.saveAttrValues(row)
     }
   },
   computed: {
