@@ -22,7 +22,11 @@
         <el-table-column label="商品名称" prop="goods_name"></el-table-column>
         <el-table-column label="商品价格(元)" prop="goods_price" width="95px"></el-table-column>
         <el-table-column label="商品重量" prop="goods_weight" width="70px"></el-table-column>
-        <el-table-column label="创建时间" prop="add_time" width="140px"></el-table-column>
+        <el-table-column label="创建时间" prop="add_time" width="140px">
+          <template v-slot="scope">
+            {{dateFormat(scope.row.add_time)}}
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="130px">
           <template>
             <el-button size="mini" type="primary" icon="el-icon-edit"></el-button>
@@ -61,6 +65,16 @@ export default {
       }
       this.goodListData = res.data.goods
       this.total = res.data.total
+    },
+    dateFormat (originVal) {
+      const dt = new Date(originVal)
+      const y = dt.getFullYear()
+      const m = (dt.getMonth() + 1 + '').padStart(2, '0')
+      const d = (dt.getDate() + '').padStart(2, '0')
+      const hh = (dt.getHours() + '').padStart(2, '0')
+      const mm = (dt.getMinutes() + '').padStart(2, '0')
+      const ss = (dt.getSeconds() + '').padStart(2, '0')
+      return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
     }
   }
 }
