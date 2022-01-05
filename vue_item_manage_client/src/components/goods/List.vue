@@ -9,8 +9,8 @@
     <el-card>
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-input placeholder="请输入内容">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable @clear="getGoodList">
+            <el-button slot="append" icon="el-icon-search" @click="getGoodList"></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
@@ -34,7 +34,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination :page-sizes="[10, 20, 30, 40]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="queryInfo.pagenum" :page-sizes="[10, 20, 30, 40]" :page-size="queryInfo.pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total" background></el-pagination>
     </el-card>
   </div>
 </template>
@@ -45,7 +45,9 @@ export default {
     return {
       queryInfo: {
         query: '',
+        // 第几页
         pagenum: 1,
+        // 每页显示多少条数据
         pagesize: 10
       },
       goodListData: [],
@@ -75,6 +77,15 @@ export default {
       const mm = (dt.getMinutes() + '').padStart(2, '0')
       const ss = (dt.getSeconds() + '').padStart(2, '0')
       return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
+    },
+    // 分页
+    handleSizeChange (newSize) {
+      this.queryInfo.pagesize = newSize
+      this.getGoodList()
+    },
+    handleCurrentChange (newPage) {
+      this.queryInfo.pagenum = newPage
+      this.getGoodList()
     }
   }
 }
