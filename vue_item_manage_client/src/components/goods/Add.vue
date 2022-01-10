@@ -58,6 +58,10 @@
         </el-tabs>
       </el-form>
     </el-card>
+    <!-- 预览dialog -->
+    <el-dialog title="预览" :visible.sync="previewDialogVisible" width="50%">
+      <el-image :src="previewPicURL" class="previewImage"></el-image>
+    </el-dialog>
   </div>
 </template>
 
@@ -110,7 +114,10 @@ export default {
       uploadURL: 'http://127.0.0.1:8888/api/private/v1/upload',
       headerObj: {
         authorization: window.sessionStorage.getItem('token')
-      }
+      },
+      // 预览图片
+      previewDialogVisible: false,
+      previewPicURL: ''
     }
   },
   created () {
@@ -168,7 +175,8 @@ export default {
     },
     // 图片
     handlePreview (file) {
-      console.log(file)
+      this.previewDialogVisible = true
+      this.previewPicURL = file.response.data.url
     },
     handleRemove (file) {
       const filePath = file.response.data.tmp_path
@@ -194,5 +202,8 @@ export default {
 <style lang="less" scoped>
   .el-checkbox {
     margin: 0 5px 0 0!important;
+  }
+  .previewImage {
+    width: 100%
   }
 </style>
