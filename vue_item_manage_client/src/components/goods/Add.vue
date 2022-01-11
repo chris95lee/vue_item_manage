@@ -54,7 +54,10 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-tab-pane>
-          <el-tab-pane label="商品内容" name="4">商品内容</el-tab-pane>
+          <el-tab-pane label="商品内容" name="4">
+            <quill-editor v-model="addForm.goods_introduce"></quill-editor>
+            <el-button type="primary" class="addBtn" @click="addGood">添加商品</el-button>
+          </el-tab-pane>
         </el-tabs>
       </el-form>
     </el-card>
@@ -78,7 +81,9 @@ export default {
         goods_weight: 0,
         goods_number: 0,
         goods_cat: [],
-        pics: []
+        pics: [],
+        goods_introduce: '',
+        attrs: []
       },
       addFormRules: {
         goods_name: [
@@ -159,7 +164,6 @@ export default {
           item.attr_vals = item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
         })
         this.manyTableData = res.data
-        console.log(this.manyTableData)
       } else if (this.activeIndex === '2') {
         const { data: res } = await this.$http.get(`categories/${this.cateID}/attributes`, {
           params: {
@@ -170,7 +174,6 @@ export default {
           return this.$message.error('获取商品属性失败')
         }
         this.onlyTableData = res.data
-        console.log(this.onlyTableData)
       }
     },
     // 图片
@@ -186,6 +189,42 @@ export default {
     handleSuccess (response) {
       const picInfo = { pic: response.data.tmp_path }
       this.addForm.pics.push(picInfo)
+    },
+    // 富文本页
+    addGood () {
+      this.$refs.addFormRef.validate(async valid => {
+        if (!valid) {
+          this.$message.error('请正确填写必要的表单项')
+        }
+        const formCloneDeep = JSON.parse(JSON.stringify(this.addForm))
+        formCloneDeep.goods_cat = formCloneDeep.goods_cat.join(',')
+        // 处理动态参数
+        this.manyTableData.forEach(item => {
+          const newInfo = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals.join(' ')
+          }
+          this.addForm.attrs.push(newInfo)
+        })
+        // 处理静态属性
+        this.onlyTableData.forEach(item => {
+          const newInfo = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals
+          }
+          this.addForm.attrs.push(newInfo)
+        })
+        formCloneDeep.attrs = this.addForm.attrs
+        console.log(formCloneDeep)
+        // 发起请求
+        const { data: res } = await this.$http.post('goods', formCloneDeep)
+        console.log(res)
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加商品失败')
+        }
+        this.$message.success('添加商品成功')
+        this.$router.push('/goods')
+      })
     }
   },
   computed: {
@@ -205,5 +244,8 @@ export default {
   }
   .previewImage {
     width: 100%
+  }
+  .addBtn {
+    margin-top: 15px;
   }
 </style>

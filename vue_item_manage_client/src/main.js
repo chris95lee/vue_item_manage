@@ -9,6 +9,10 @@ import './assets/css/global.css'
 import './assets/iconfont/iconfont.css'
 import axios from 'axios'
 import TreeTable from 'vue-table-with-tree-grid'
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 Vue.use(ElementUI)
 // 每个vue实例都可以通过axios发送Ajax请求,配置请求根路径
@@ -23,6 +27,7 @@ Vue.prototype.$http = axios
 Vue.config.productionTip = false
 // TreeTable
 Vue.component('tree-table', TreeTable)
+Vue.use(VueQuillEditor)
 
 new Vue({
   router,
