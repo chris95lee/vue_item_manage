@@ -16,13 +16,18 @@
         </el-col>
       </el-row>
       <!-- 表格 -->
-      <el-table border stripe>
-        <el-table-column type="index"></el-table-column>
-        <el-table-column></el-table-column>
+      <el-table border stripe :data="orderList">
+        <el-table-column type="index" label="#"></el-table-column>
+        <el-table-column label="订单编号" prop="order_number"></el-table-column>
+        <el-table-column label="订单价格" prop="order_price"></el-table-column>
+        <el-table-column label="是否付款"></el-table-column>
+        <el-table-column label="是否发货" prop="is_send"></el-table-column>
+        <el-table-column label="下单时间" prop="create_time"></el-table-column>
+        <el-table-column label="操作"></el-table-column>
       </el-table>
       <!-- 分页 -->
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage4" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400">
-    </el-pagination>
+      <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
     </el-card>
   </div>
 </template>
@@ -31,14 +36,30 @@
 export default {
   data () {
     return {
-
+      queryInfo: {
+        query: '',
+        pagesize: 10,
+        pagenum: 1
+      },
+      orderList: [],
+      total: 0
     }
   },
   created () {
-
+    this.getOrderList()
   },
   methods: {
-
+    async getOrderList () {
+      const { data: res } = await this.$http.get('orders', {
+        params: this.queryInfo
+      })
+      console.log(res.data.goods)
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取订单列表失败')
+      }
+      this.orderList = res.data.goods
+      this.total = res.data.total
+    }
   },
   computed: {
 
