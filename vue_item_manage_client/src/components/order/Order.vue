@@ -33,7 +33,7 @@
         <el-table-column label="操作">
           <template>
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditBox"></el-button>
-            <el-button type="success" icon="el-icon-location" size="mini"></el-button>
+            <el-button type="success" icon="el-icon-location" size="mini" @click="showProgressBox"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -57,6 +57,14 @@
         <el-button type="primary" @click="editBoxVisible = false">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- progress dialog -->
+    <el-dialog title="物流信息" :visible.sync="progressBoxVisible" width="50%">
+      <el-timeline>
+        <el-timeline-item v-for="(activity, index) in progressInfo" :key="index" :timestamp="activity.time">
+          {{activity.context}}
+        </el-timeline-item>
+      </el-timeline>
+    </el-dialog>
   </div>
 </template>
 
@@ -73,6 +81,7 @@ export default {
       orderList: [],
       total: 0,
       editBoxVisible: false,
+      progressBoxVisible: false,
       editForm: {
         address1: [],
         address2: ''
@@ -88,7 +97,8 @@ export default {
       editFormProps: {
         expandTrigger: 'hover'
       },
-      cityData
+      cityData,
+      progressInfo: []
     }
   },
   created () {
@@ -131,6 +141,16 @@ export default {
     },
     editFormClose () {
       this.$refs.editFormRef.resetFields()
+    },
+    // 物流
+    async showProgressBox () {
+      this.progressBoxVisible = true
+      const res = [
+        { context: '已签收，感谢使用顺丰，期待再次为您服务', time: '2018-04-15' },
+        { context: '[北京市]北京海淀育新小区营业点派件员 顺丰速运 95538正在为您派件', time: '2018-04-13' },
+        { context: '快递到达[北京海淀育新小区营业点]', time: '2018-04-11' }
+      ]
+      this.progressInfo = res
     }
   },
   computed: {
