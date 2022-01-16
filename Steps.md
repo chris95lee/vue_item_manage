@@ -17,3 +17,14 @@
 2.9 配置项目相关信息
 2.10 启动项目
 2.11 使用Postman测试后台项目接口是否正常
+3. 项目开发
+4. serve build
+4.1 serve时检查警告包括eslint、定义未使用变量等
+4.2 build时检查警告包括size过大、console.log未移除（可通过插件babel-plugin-transform-remove-console自动移除，还可以通过额外的条件控制serve时不移除，build时移除）
+5. 项目优化
+5.1 项目优化策略
+(1) 生成打包报告
+(2) 第三方库启用CDN
+(3) Element-UI组件按需加载
+(4) 路由懒加载
+(5) 首页内容定制
