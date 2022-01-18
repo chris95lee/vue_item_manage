@@ -30,6 +30,10 @@
   通过vue.config.js修改webpack的默认配置
     通过vue-cli 3.0工具生成的项目，默认隐藏了所有webpack的配置项，使得程序员把工作重心放到实现具体功能和业务逻辑上。但如果需要修改webpack配置，则需要通过在根目录创建vue.config.js进行自定义配置
 (2) 第三方库启用CDN
+  import引入依赖包，都会打包合并到一个文件中，导致单文件体积过大。于是通过webpack的externals节点，配置并加载外部的CDN资源。凡是在externals中声明的第三方依赖包，都不会被打包，而在使用时去window全局查找这个对象来使用。
+  <1> 配置externals节点
+  <2> public/index.html中添加CDN资源引用css
+  <3> public/index.html中添加CDN资源引用js【这里vue和vue-router暂时不用CDN引入01.18】
 (3) Element-UI组件按需加载
 (4) 路由懒加载
 (5) 首页内容定制
