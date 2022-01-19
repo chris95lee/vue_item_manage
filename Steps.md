@@ -34,6 +34,25 @@
   <1> 配置externals节点
   <2> public/index.html中添加CDN资源引用css
   <3> public/index.html中添加CDN资源引用js【这里vue和vue-router暂时不用CDN引入01.18】
-(3) Element-UI组件按需加载
+(3) Element-UI组件CDN优化
+  <1> 在main-prod.js中，注释掉element-ui按需加载的代码
+  <2> 在index.html中，通过CDN加载element-ui的js和css样式
 (4) 路由懒加载
+  <1> 在打包构建项目时，js包会变得非常大，影响页面加载。如果能把不同路由对应的组件分割成不同的代码块，当路由被访问时才加载对应组件，就会更加高效。
+  <2> 安装@babel/plugin-syntax-dynamic-import
+  <3> 在babel.config.js配置文件中声明该插件
+  <4> 将路由改造为按需加载的形式
 (5) 首页内容定制
+6. 项目上线
+6.1 配置
+(1) 通过node创建web服务器
+(2) 开启gzip配置
+  减小文件体积，提高传输速度，通过服务器端使用express做gzip压缩
+(3) 配置https服务
+  实际开发由后端完成。[申请SSL证书]
+  <1> https://freessl.org，申请域名，选择品牌
+  <2> 输入邮箱，选择相关选项
+  <3> 验证DNS（在域名管理后台添加txt记录）
+  <4> 下载SSL证书（full_chain.pem公钥，private.key私钥）
+(4) 使用pm2管理应用
+  pm2 node进程管理工具
